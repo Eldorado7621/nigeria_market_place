@@ -2,12 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'ErrorScreen.dart';
 import 'package:connectivity/connectivity.dart';
-import 'ConnectivityService.dart';
-import 'package:provider/provider.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
-String closeVal="";
+String closeVal = "";
 final Set<JavascriptChannel> jsChannels = [
   JavascriptChannel(
       name: 'Print',
@@ -17,7 +15,7 @@ final Set<JavascriptChannel> jsChannels = [
 ].toSet();
 
 class MyApp extends StatelessWidget {
-  static String id='my_app';
+  static String id = 'my_app';
   final flutterWebViewPlugin = FlutterWebviewPlugin();
   // This widget is the root of your application.
   @override
@@ -25,21 +23,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nigeria Market Place',
       theme: ThemeData(
-
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Nigeria Market Place'),
       routes: {
-        ErrorScreen.id:(context)=>ErrorScreen(),
+        ErrorScreen.id: (context) => ErrorScreen(),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  static String id='my_app';
+  static String id = 'my_app';
   MyHomePage({Key key, this.title}) : super(key: key);
-
 
   final String title;
 
@@ -48,20 +44,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
   void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return new SplashScreen(
       title: new Text(
         ' ',
@@ -69,8 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       seconds: 3,
       navigateAfterSeconds: AfterSplash(),
-      image: new Image.asset(
-          'image/nmp-logo.png'),
+      image: new Image.asset('image/nmp-logo.png'),
       backgroundColor: Color(0xffffffff),
       styleTextUnderTheLoader: new TextStyle(),
       photoSize: 150.0,
@@ -84,6 +71,7 @@ class AfterSplash extends StatefulWidget {
   @override
   _AfterSplashState createState() => new _AfterSplashState();
 }
+
 class _AfterSplashState extends State {
   final flutterWebViewPlugin = FlutterWebviewPlugin();
   // On destroy stream
@@ -102,8 +90,6 @@ class _AfterSplashState extends State {
   StreamSubscription<double> _onScrollYChanged;
 
   StreamSubscription<double> _onScrollXChanged;
-  final _history = [];
-
 
   StreamSubscription<ConnectivityResult> subscription;
 
@@ -114,13 +100,13 @@ class _AfterSplashState extends State {
 
     _onProgressChanged =
         flutterWebViewPlugin.onProgressChanged.listen((double progress) {
-          if (mounted) {
-            setState(() {
-              // _history.add('onProgressChanged: $progress');
-              closeVal="loading...";
-            });
-          }
+      if (mounted) {
+        setState(() {
+          // _history.add('onProgressChanged: $progress');
+          closeVal = "loading...";
         });
+      }
+    });
 
     _onUrlChanged = flutterWebViewPlugin.onUrlChanged.listen((String url) {
       if (mounted) {
@@ -128,24 +114,23 @@ class _AfterSplashState extends State {
           // _history.clear();
           //  _history.add('loading...');
           // _history.add('onUrlChanged: $url');
-          closeVal="";
+          closeVal = "";
         });
-      }
-      else{
+      } else {
         setState(() {
           // _history.clear();
           //  _history.add('loading...');
           // _history.add('onUrlChanged: $url');
-          closeVal="";
+          closeVal = "";
         });
       }
     });
-
-
   }
+
   @override
   void dispose() {
     // Every listener should be canceled, the same should be done with this stream.
+    subscription.cancel();
     _onDestroy.cancel();
     _onUrlChanged.cancel();
     _onStateChanged.cancel();
@@ -158,18 +143,20 @@ class _AfterSplashState extends State {
 
     super.dispose();
   }
+
   String _networkStatus2 = '';
   Connectivity connectivity = Connectivity();
   void checkConnectivity2() async {
     // Subscribe to the connectivity change
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-          var conn = getConnectionValue(result);
-          setState(() {
-            _networkStatus2 =  conn;
-          });
-        });
+      var conn = getConnectionValue(result);
+      setState(() {
+        _networkStatus2 = conn;
+      });
+    });
   }
+
   String getConnectionValue(var connectivityResult) {
     String status = '';
     switch (connectivityResult) {
@@ -188,22 +175,22 @@ class _AfterSplashState extends State {
     }
     return status;
   }
+
   bool showLoading = false;
   void updateLoading(bool ls) {
-    this.setState((){
+    this.setState(() {
       showLoading = ls;
     });
   }
+
   Widget build(BuildContext context) {
     if (_networkStatus2 == 'None') {
       print("not none");
       return new Scaffold(
-
         body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
           child: Column(
-
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
@@ -214,27 +201,21 @@ class _AfterSplashState extends State {
               Text(
                 'You do not have internet connection:',
                 style: TextStyle(fontSize: 20),
-
-
               ),
-
             ],
           ),
         ),
-
-
       );
     }
 
     return new Scaffold(
-
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
               flex: 22,
-              child: WebviewScaffold
-                (url: "https://www.mobile.nigeriamarketplace.org",
+              child: WebviewScaffold(
+                url: "https://www.mobile.nigeriamarketplace.org",
                 hidden: true,
               ),
             ),
